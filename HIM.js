@@ -1,7 +1,10 @@
 // ==UserScript==
 // @name         Hide Ignored Messages
 // @namespace    https://github.com/FFrelay/Userscripts
-// @version      1.0
+// @version      1.1
+// @homepageURL  https://github.com/FFrelay/Userscripts
+// @updateURL    https://raw.githubusercontent.com/FFrelay/Userscripts/refs/heads/main/HIM.js
+// @downloadURL  https://raw.githubusercontent.com/FFrelay/Userscripts/refs/heads/main/HIM.js
 // @description  Hides ignored messages and nested ignored quotes on voz.vn
 // @author       ffrelay
 // @match        https://voz.vn/*
