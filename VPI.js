@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name         VOZ Post Ignorer (Dark Theme)
 // @namespace    https://github.com/FFrelay/Userscripts
-// @version      3.4
+// @version      3.5
 // @homepageURL  https://github.com/FFrelay/Userscripts
 // @updateURL    https://raw.githubusercontent.com/FFrelay/Userscripts/main/VPI.js
 // @downloadURL  https://raw.githubusercontent.com/FFrelay/Userscripts/main/VPI.js
-// @description  Ignore and hide ignored users on voz.vn
+// @description  Ignore and hide ignored users and their quotes on voz.vn
 // @author       ffrelay
 // @match        https://voz.vn/*
 // @grant        GM_getValue
@@ -45,14 +45,14 @@
         position: fixed;
         bottom: 20px;
         right: 20px;
-        padding: 7.2px 14.4px; /* 60% of original padding */
-        font-size: 12px; /* Adjust font size for smaller buttons */
+        padding: 7.2px 14.4px; /* Scaled down */
+        font-size: 12px;
         background: #000;
         color: white;
-        border: 1.2px solid #444; /* 60% of original border thickness */
-        border-radius: 15px; /* 60% of original radius */
+        border: 1.2px solid #444;
+        border-radius: 15px;
         cursor: pointer;
-        box-shadow: 0 1.2px 3px rgba(255,255,255,0.1); /* 60% of original shadow */
+        box-shadow: 0 1.2px 3px rgba(255,255,255,0.1);
         z-index: 10001;
         font-weight: bold;
         transition: all 0.3s;
@@ -95,6 +95,23 @@
         return false;
     }
 
+    // Function to hide quotes from ignored users
+    function hideIgnoredQuotes() {
+        document.querySelectorAll('blockquote.bbCodeBlock.bbCodeBlock--expandable.bbCodeBlock--quote.js-expandWatch').forEach(quote => {
+            const quoteAuthor = getQuoteAuthor(quote);
+            if (quoteAuthor && isUserIgnored(quoteAuthor)) {
+                quote.style.display = 'none'; // Hide the quote block
+            } else {
+                quote.style.display = ''; // Ensure visible if not ignored
+            }
+        });
+    }
+
+    // Function to extract the author of a quote using data-quote attribute
+    function getQuoteAuthor(quoteElement) {
+        return quoteElement.getAttribute('data-quote') || null;
+    }
+
     function addIgnoreButton(postElement, username) {
         if (postElement.querySelector('.ignore-button')) return;
 
@@ -103,7 +120,7 @@
         buttonContainer.style.cssText = `
             display: flex;
             justify-content: center;
-            margin-top: 9px; /* 60% of original margin */
+            margin-top: 9px;
         `;
 
         const button = document.createElement('button');
@@ -112,14 +129,14 @@
         button.style.cssText = `
             background: #000;
             color: white !important;
-            padding: 6px 15px; /* 60% of original padding */
-            font-size: 12px; /* Adjust font size for smaller buttons */
-            border: 1.2px solid #444; /* 60% of original border thickness */
-            border-radius: 15px; /* 60% of original radius */
+            padding: 6px 15px;
+            font-size: 12px;
+            border: 1.2px solid #444;
+            border-radius: 15px;
             cursor: pointer;
             transition: all 0.3s;
             font-weight: bold;
-            box-shadow: 0 1.2px 3px rgba(255,255,255,0.1); /* 60% of original shadow */
+            box-shadow: 0 1.2px 3px rgba(255,255,255,0.1);
         `;
 
         // Hover effects
@@ -138,6 +155,7 @@
                 ignoredUsers.push(username);
                 saveIgnoredUsers();
                 hideIgnoredPosts();
+                hideIgnoredQuotes(); // Also hide quotes from the ignored user
 
                 // Visual feedback
                 button.textContent = 'Ignored';
@@ -162,12 +180,12 @@
             <h3 style="margin-top: 0; color: white">Ignored Users (${ignoredUsers.length})</h3>
             <button id="closePanel" style="
                 float: right;
-                margin: 6px 0; /* 60% of original margin */
+                margin: 6px 0;
                 background: #333;
                 color: white;
-                padding: 4.8px 9.6px; /* 60% of original padding */
-                font-size: 12px; /* Adjust font size for smaller buttons */
-                border-radius: 2.4px; /* 60% of original radius */
+                padding: 4.8px 9.6px;
+                font-size: 12px;
+                border-radius: 2.4px;
                 border: none;
                 cursor: pointer;
             ">Close</button>
@@ -183,8 +201,8 @@
                 item.style.cssText = `
                     display: flex;
                     justify-content: space-between;
-                    padding: 7.2px 0; /* 60% of original padding */
-                    border-bottom: 0.6px solid #444; /* 60% of original border thickness */
+                    padding: 7.2px 0;
+                    border-bottom: 0.6px solid #444;
                     color: white;
                 `;
                 item.innerHTML = `
@@ -192,9 +210,9 @@
                     <button class="removeUser" style="
                         background: #444;
                         color: white;
-                        padding: 2.4px 7.2px; /* 60% of original padding */
-                        font-size: 12px; /* Adjust font size for smaller buttons */
-                        border-radius: 2.4px; /* 60% of original radius */
+                        padding: 2.4px 7.2px;
+                        font-size: 12px;
+                        border-radius: 2.4px;
                         border: none;
                         cursor: pointer;
                     ">Remove</button>
@@ -227,6 +245,7 @@
                     saveIgnoredUsers();
                     showManagePanel(); // Refresh the list
                     hideIgnoredPosts(); // Show unignored posts
+                    hideIgnoredQuotes(); // Refresh quotes visibility
                 }
             });
         });
@@ -238,11 +257,13 @@
             if (username) addIgnoreButton(post, username);
         });
         hideIgnoredPosts(); // Apply hiding logic after processing posts
+        hideIgnoredQuotes(); // Apply hiding logic for quotes
     }
 
     // Initialize
     (function init() {
         hideIgnoredPosts();
+        hideIgnoredQuotes(); // Initial hiding of quotes
         processPosts();
 
         // Add manage button
