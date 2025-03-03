@@ -7,7 +7,7 @@
 // @downloadURL  https://raw.githubusercontent.com/FFrelay/Userscripts/main/GPI.js
 // @description  Ignore and hide ignored users on gvn.co
 // @author       ffrelay
-// @match        https://gvn.co/*
+// @match        http://gvn.co/*
 // @grant        GM_getValue
 // @grant        GM_setValue
 // ==/UserScript==
