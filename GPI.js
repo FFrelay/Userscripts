@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name         GVN Post Ignorer (Dark Theme)
 // @namespace    https://github.com/FFrelay/Userscripts
-// @version      1.1
+// @version      1.5
 // @homepageURL  https://github.com/FFrelay/Userscripts
 // @updateURL    https://raw.githubusercontent.com/FFrelay/Userscripts/main/GPI.js
 // @downloadURL  https://raw.githubusercontent.com/FFrelay/Userscripts/main/GPI.js
-// @description  Ignore and hide ignored users on gvn.co
+// @description  Ignore and hide ignored users and their quotes on gvn.co
 // @author       ffrelay
 // @match        http://gvn.co/*
 // @grant        GM_getValue
@@ -75,7 +75,7 @@
     }
 
     function hideIgnoredPosts() {
-        document.querySelectorAll('li.message').forEach(post => {
+        document.querySelectorAll('ol#messageList.messageList li.message').forEach(post => {
             const username = getUsernameFromPost(post);
             const isExcludedPost = isPostMarkedAsOne(post);
 
@@ -84,20 +84,34 @@
         });
     }
 
-    // Function to extract username from post
-    function getUsernameFromPost(postElement) {
-        const usernameAnchor = postElement.querySelector(
-            'div.messageUserInfo div.messageUserBlock h3.userText a.username'
-        );
-        return usernameAnchor?.textContent.trim() || null;
-    }
-
     // Function to check if a post is marked with #1
     function isPostMarkedAsOne(postElement) {
         const hashPermalink = postElement.querySelector(
             'div.messageInfo.primaryContent div.messageMeta.ToggleTriggerAnchor div.publicControls a.item.muted.postNumber.hashPermalink.OverlayTrigger'
         );
         return hashPermalink?.textContent.trim() === '#1';
+    }
+
+    // Function to extract username from post using data-author attribute
+    function getUsernameFromPost(postElement) {
+        return postElement.getAttribute('data-author') || null;
+    }
+
+    // Function to hide quotes from ignored users
+    function hideIgnoredQuotes() {
+        document.querySelectorAll('div.bbCodeBlock.bbCodeQuote[data-author]').forEach(quote => {
+            const quoteAuthor = getQuoteAuthor(quote);
+            if (quoteAuthor && isUserIgnored(quoteAuthor)) {
+                quote.style.display = 'none'; // Hide the quote block
+            } else {
+                quote.style.display = ''; // Ensure visible if not ignored
+            }
+        });
+    }
+
+    // Function to extract the author of a quote using data-author attribute
+    function getQuoteAuthor(quoteElement) {
+        return quoteElement.getAttribute('data-author') || null;
     }
 
     function addIgnoreButton(postElement) {
@@ -146,6 +160,7 @@
                 ignoredUsers.push(username);
                 saveIgnoredUsers();
                 hideIgnoredPosts();
+                hideIgnoredQuotes(); // Also hide quotes from the ignored user
 
                 // Visual feedback
                 button.textContent = 'Ignored';
@@ -235,21 +250,24 @@
                     saveIgnoredUsers();
                     showManagePanel(); // Refresh the list
                     hideIgnoredPosts(); // Show unignored posts
+                    hideIgnoredQuotes(); // Refresh quotes visibility
                 }
             });
         });
     }
 
     function processPosts() {
-        document.querySelectorAll('li.message').forEach(post => {
+        document.querySelectorAll('ol#messageList.messageList li.message').forEach(post => {
             addIgnoreButton(post);
         });
         hideIgnoredPosts(); // Apply hiding logic after processing posts
+        hideIgnoredQuotes(); // Apply hiding logic for quotes
     }
 
     // Initialize
     (function init() {
         hideIgnoredPosts();
+        hideIgnoredQuotes(); // Initial hiding of quotes
         processPosts();
 
         // Add manage button
