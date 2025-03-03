@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         VOZ Post Ignorer (Dark Theme)
 // @namespace    https://github.com/FFrelay/Userscripts
-// @version      3.2
+// @version      3.3
 // @homepageURL  https://github.com/FFrelay/Userscripts
 // @updateURL    https://raw.githubusercontent.com/FFrelay/Userscripts/refs/heads/main/VPI.js
 // @downloadURL  https://raw.githubusercontent.com/FFrelay/Userscripts/refs/heads/main/VPI.js
@@ -76,8 +76,22 @@
     function hideIgnoredPosts() {
         document.querySelectorAll('article[data-author]').forEach(post => {
             const username = post.getAttribute('data-author');
-            post.style.display = (username && isUserIgnored(username)) ? 'none' : '';
+            const isExcludedPost = isPostMarkedAsOne(post);
+
+            // Hide if user is ignored and not excluded by #1
+            post.style.display = (username && isUserIgnored(username) && !isExcludedPost) ? 'none' : '';
         });
+    }
+
+    // Function to check if a post is marked with #1
+    function isPostMarkedAsOne(postElement) {
+        const anchors = postElement.querySelectorAll('a'); // Get all <a> elements in the post
+        for (const anchor of anchors) {
+            if (anchor.textContent.trim() === '#1') { // Check if the text content is exactly "#1"
+                return true;
+            }
+        }
+        return false;
     }
 
     function addIgnoreButton(postElement, username) {
@@ -203,6 +217,7 @@
             const username = post.getAttribute('data-author');
             if (username) addIgnoreButton(post, username);
         });
+        hideIgnoredPosts(); // Apply hiding logic after processing posts
     }
 
     // Initialize
@@ -218,7 +233,6 @@
 
         // Observe DOM changes
         const observer = new MutationObserver(() => {
-            hideIgnoredPosts();
             processPosts();
         });
 
