@@ -1,0 +1,230 @@
+// ==UserScript==
+// @name         VOZ Post Ignorer (Dark Theme)
+// @namespace    https://github.com/FFrelay/Userscripts
+// @version      3.2
+// @homepageURL  https://github.com/FFrelay/Userscripts
+// @updateURL    https://raw.githubusercontent.com/FFrelay/Userscripts/refs/heads/main/VPI.js
+// @downloadURL  https://raw.githubusercontent.com/FFrelay/Userscripts/refs/heads/main/VPI.js
+// @description  Ignore and hide ignored users on voz.vn
+// @author       ffrelay
+// @match        https://voz.vn/*
+// @grant        GM_getValue
+// @grant        GM_setValue
+// ==/UserScript==
+
+(function () {
+    'use strict';
+
+    const IGNORED_USERS_KEY = 'ignoredUsers';
+    let ignoredUsers = GM_getValue(IGNORED_USERS_KEY, []);
+
+    // Management panel setup
+    const panel = document.createElement('div');
+    panel.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #000;
+        color: white;
+        padding: 20px;
+        border: 1px solid #333;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(255,255,255,0.1);
+        max-width: 400px;
+        max-height: 80vh;
+        overflow-y: auto;
+        display: none;
+        z-index: 10000;
+    `;
+
+    // Floating manage button
+    const manageButton = document.createElement('button');
+    manageButton.textContent = 'Ignored Users';
+    manageButton.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 12px 24px;
+        background: #000;
+        color: white;
+        border: 2px solid #444;
+        border-radius: 25px;
+        cursor: pointer;
+        box-shadow: 0 2px 5px rgba(255,255,255,0.1);
+        z-index: 10001;
+        font-weight: bold;
+        transition: all 0.3s;
+    `;
+
+    // Button hover effects
+    manageButton.addEventListener('mouseover', () => {
+        manageButton.style.backgroundColor = '#333';
+    });
+    manageButton.addEventListener('mouseout', () => {
+        manageButton.style.backgroundColor = '#000';
+    });
+
+    function saveIgnoredUsers() {
+        GM_setValue(IGNORED_USERS_KEY, ignoredUsers);
+    }
+
+    function isUserIgnored(username) {
+        return ignoredUsers.includes(username);
+    }
+
+    function hideIgnoredPosts() {
+        document.querySelectorAll('article[data-author]').forEach(post => {
+            const username = post.getAttribute('data-author');
+            post.style.display = (username && isUserIgnored(username)) ? 'none' : '';
+        });
+    }
+
+    function addIgnoreButton(postElement, username) {
+        if (postElement.querySelector('.ignore-button')) return;
+
+        // Create button container
+        const buttonContainer = document.createElement('div');
+        buttonContainer.style.cssText = `
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+        `;
+
+        const button = document.createElement('button');
+        button.textContent = 'Ignore';
+        button.className = 'ignore-button';
+        button.style.cssText = `
+            background: #000;
+            color: white !important;
+            padding: 10px 25px;
+            border: 2px solid #444;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(255,255,255,0.1);
+        `;
+
+        // Hover effects
+        button.addEventListener('mouseover', () => {
+            button.style.backgroundColor = '#333';
+        });
+        button.addEventListener('mouseout', () => {
+            button.style.backgroundColor = '#000';
+        });
+
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (!isUserIgnored(username)) {
+                ignoredUsers.push(username);
+                saveIgnoredUsers();
+                hideIgnoredPosts();
+
+                // Visual feedback
+                button.textContent = 'Ignored';
+                button.style.backgroundColor = '#4CAF50';
+                button.style.borderColor = '#4CAF50';
+                setTimeout(() => {
+                    button.textContent = 'Ignore';
+                    button.style.backgroundColor = '#000';
+                    button.style.borderColor = '#444';
+                }, 1000);
+            }
+        });
+
+        buttonContainer.appendChild(button);
+
+        const userCell = postElement.querySelector('.message-cell--user.message-cell');
+        userCell?.appendChild(buttonContainer);
+    }
+
+    function showManagePanel() {
+        panel.innerHTML = `
+            <h3 style="margin-top: 0; color: white">Ignored Users (${ignoredUsers.length})</h3>
+            <button id="closePanel" style="float: right; margin: 10px 0; background: #333; color: white; padding: 8px 16px; border-radius: 4px; border: none; cursor: pointer">Close</button>
+            <div id="userList" style="max-height: 300px; overflow-y: auto; margin-top: 20px"></div>
+        `;
+
+        const userList = panel.querySelector('#userList');
+        if (ignoredUsers.length === 0) {
+            userList.innerHTML = '<p style="color: #999">No users ignored yet</p>';
+        } else {
+            ignoredUsers.forEach(user => {
+                const item = document.createElement('div');
+                item.style.cssText = `
+                    display: flex;
+                    justify-content: space-between;
+                    padding: 12px 0;
+                    border-bottom: 1px solid #444;
+                    color: white;
+                `;
+                item.innerHTML = `
+                    <span style="color: #ddd">${user}</span>
+                    <button class="removeUser" style="background: #444; color: white; padding: 4px 12px; border-radius: 4px; border: none; cursor: pointer">Remove</button>
+                `;
+                userList.appendChild(item);
+            });
+        }
+
+        panel.style.display = 'block';
+        document.body.appendChild(panel);
+
+        // Close button
+        panel.querySelector('#closePanel').addEventListener('click', () => {
+            panel.style.display = 'none';
+        });
+
+        // Remove user buttons
+        panel.querySelectorAll('.removeUser').forEach(button => {
+            button.addEventListener('mouseover', (e) => {
+                e.target.style.backgroundColor = '#666';
+            });
+            button.addEventListener('mouseout', (e) => {
+                e.target.style.backgroundColor = '#444';
+            });
+            button.addEventListener('click', () => {
+                const username = button.parentElement.querySelector('span').textContent;
+                const index = ignoredUsers.indexOf(username);
+                if (index > -1) {
+                    ignoredUsers.splice(index, 1);
+                    saveIgnoredUsers();
+                    showManagePanel(); // Refresh the list
+                    hideIgnoredPosts(); // Show unignored posts
+                }
+            });
+        });
+    }
+
+    function processPosts() {
+        document.querySelectorAll('article[data-author]').forEach(post => {
+            const username = post.getAttribute('data-author');
+            if (username) addIgnoreButton(post, username);
+        });
+    }
+
+    // Initialize
+    (function init() {
+        hideIgnoredPosts();
+        processPosts();
+
+        // Add manage button
+        document.body.appendChild(manageButton);
+        manageButton.addEventListener('click', () => {
+            showManagePanel();
+        });
+
+        // Observe DOM changes
+        const observer = new MutationObserver(() => {
+            hideIgnoredPosts();
+            processPosts();
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    })();
+})();
