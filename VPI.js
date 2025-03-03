@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         VOZ Post Ignorer (Dark Theme)
 // @namespace    https://github.com/FFrelay/Userscripts
-// @version      3.3
+// @version      3.4
 // @homepageURL  https://github.com/FFrelay/Userscripts
 // @updateURL    https://raw.githubusercontent.com/FFrelay/Userscripts/main/VPI.js
 // @downloadURL  https://raw.githubusercontent.com/FFrelay/Userscripts/main/VPI.js
@@ -45,13 +45,14 @@
         position: fixed;
         bottom: 20px;
         right: 20px;
-        padding: 12px 24px;
+        padding: 7.2px 14.4px; /* 60% of original padding */
+        font-size: 12px; /* Adjust font size for smaller buttons */
         background: #000;
         color: white;
-        border: 2px solid #444;
-        border-radius: 25px;
+        border: 1.2px solid #444; /* 60% of original border thickness */
+        border-radius: 15px; /* 60% of original radius */
         cursor: pointer;
-        box-shadow: 0 2px 5px rgba(255,255,255,0.1);
+        box-shadow: 0 1.2px 3px rgba(255,255,255,0.1); /* 60% of original shadow */
         z-index: 10001;
         font-weight: bold;
         transition: all 0.3s;
@@ -102,7 +103,7 @@
         buttonContainer.style.cssText = `
             display: flex;
             justify-content: center;
-            margin-top: 15px;
+            margin-top: 9px; /* 60% of original margin */
         `;
 
         const button = document.createElement('button');
@@ -111,13 +112,14 @@
         button.style.cssText = `
             background: #000;
             color: white !important;
-            padding: 10px 25px;
-            border: 2px solid #444;
-            border-radius: 25px;
+            padding: 6px 15px; /* 60% of original padding */
+            font-size: 12px; /* Adjust font size for smaller buttons */
+            border: 1.2px solid #444; /* 60% of original border thickness */
+            border-radius: 15px; /* 60% of original radius */
             cursor: pointer;
             transition: all 0.3s;
             font-weight: bold;
-            box-shadow: 0 2px 5px rgba(255,255,255,0.1);
+            box-shadow: 0 1.2px 3px rgba(255,255,255,0.1); /* 60% of original shadow */
         `;
 
         // Hover effects
@@ -158,8 +160,18 @@
     function showManagePanel() {
         panel.innerHTML = `
             <h3 style="margin-top: 0; color: white">Ignored Users (${ignoredUsers.length})</h3>
-            <button id="closePanel" style="float: right; margin: 10px 0; background: #333; color: white; padding: 8px 16px; border-radius: 4px; border: none; cursor: pointer">Close</button>
-            <div id="userList" style="max-height: 300px; overflow-y: auto; margin-top: 20px"></div>
+            <button id="closePanel" style="
+                float: right;
+                margin: 6px 0; /* 60% of original margin */
+                background: #333;
+                color: white;
+                padding: 4.8px 9.6px; /* 60% of original padding */
+                font-size: 12px; /* Adjust font size for smaller buttons */
+                border-radius: 2.4px; /* 60% of original radius */
+                border: none;
+                cursor: pointer;
+            ">Close</button>
+            <div id="userList" style="max-height: 300px; overflow-y: auto; margin-top: 12px"></div>
         `;
 
         const userList = panel.querySelector('#userList');
@@ -171,13 +183,21 @@
                 item.style.cssText = `
                     display: flex;
                     justify-content: space-between;
-                    padding: 12px 0;
-                    border-bottom: 1px solid #444;
+                    padding: 7.2px 0; /* 60% of original padding */
+                    border-bottom: 0.6px solid #444; /* 60% of original border thickness */
                     color: white;
                 `;
                 item.innerHTML = `
                     <span style="color: #ddd">${user}</span>
-                    <button class="removeUser" style="background: #444; color: white; padding: 4px 12px; border-radius: 4px; border: none; cursor: pointer">Remove</button>
+                    <button class="removeUser" style="
+                        background: #444;
+                        color: white;
+                        padding: 2.4px 7.2px; /* 60% of original padding */
+                        font-size: 12px; /* Adjust font size for smaller buttons */
+                        border-radius: 2.4px; /* 60% of original radius */
+                        border: none;
+                        cursor: pointer;
+                    ">Remove</button>
                 `;
                 userList.appendChild(item);
             });
