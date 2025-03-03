@@ -3,8 +3,8 @@
 // @namespace    https://github.com/FFrelay/Userscripts
 // @version      3.3
 // @homepageURL  https://github.com/FFrelay/Userscripts
-// @updateURL    https://raw.githubusercontent.com/FFrelay/Userscripts/refs/heads/main/VPI.js
-// @downloadURL  https://raw.githubusercontent.com/FFrelay/Userscripts/refs/heads/main/VPI.js
+// @updateURL    https://raw.githubusercontent.com/FFrelay/Userscripts/main/VPI.js
+// @downloadURL  https://raw.githubusercontent.com/FFrelay/Userscripts/main/VPI.js
 // @description  Ignore and hide ignored users on voz.vn
 // @author       ffrelay
 // @match        https://voz.vn/*
