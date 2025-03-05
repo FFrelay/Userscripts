@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         VOZ Post Ignorer (Dark Theme)
 // @namespace    https://github.com/FFrelay/Userscripts
-// @version      0.1
+// @version      3.6
 // @homepageURL  https://github.com/FFrelay/Userscripts
 // @updateURL    https://raw.githubusercontent.com/FFrelay/Userscripts/main/VPI.js
 // @downloadURL  https://raw.githubusercontent.com/FFrelay/Userscripts/main/VPI.js
