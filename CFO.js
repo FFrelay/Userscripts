@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Copilot Font Override
 // @namespace    http://tampermonkey.net/
-// @version      0.3
+// @version      0.4
 // @homepageURL  https://github.com/FFrelay/Userscripts
 // @updateURL    https://raw.githubusercontent.com/FFrelay/Userscripts/main/CFO.js
 // @downloadURL  https://raw.githubusercontent.com/FFrelay/Userscripts/main/CFO.js
@@ -27,7 +27,7 @@
         }
         @font-face {
             font-family: 'Copilot Default';
-            src: local('Arial');
+            src: local('Segoe UI');
             unicode-range: U+000-5FF; /* Basic Latin */
         }
     `;
