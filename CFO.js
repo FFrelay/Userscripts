@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         Copilot Font Override
 // @namespace    http://tampermonkey.net/
-// @version      0.2
+// @version      0.3
 // @homepageURL  https://github.com/FFrelay/Userscripts
 // @updateURL    https://raw.githubusercontent.com/FFrelay/Userscripts/main/CFO.js
 // @downloadURL  https://raw.githubusercontent.com/FFrelay/Userscripts/main/CFO.js
 // @description  Hides ignored messages and nested ignored quotes on voz.vn
 // @author       ffrelay
-// @match        https://voz.vn/*
+// @match        https://copilot.microsoft.com/*
 // @grant        none
 // ==/UserScript==
 
