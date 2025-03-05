@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         VOZ Post Ignorer (Dark Theme)
 // @namespace    https://github.com/FFrelay/Userscripts
-// @version      3.5
+// @version      3.6
 // @homepageURL  https://github.com/FFrelay/Userscripts
 // @updateURL    https://raw.githubusercontent.com/FFrelay/Userscripts/main/VPI.js
 // @downloadURL  https://raw.githubusercontent.com/FFrelay/Userscripts/main/VPI.js
@@ -10,6 +10,7 @@
 // @match        https://voz.vn/*
 // @grant        GM_getValue
 // @grant        GM_setValue
+// @run-in       no-container-tab
 // ==/UserScript==
 
 (function () {
