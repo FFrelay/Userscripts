@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         GVN Post Ignorer (Dark Theme)
 // @namespace    https://github.com/FFrelay/Userscripts
-// @version      1.6
+// @version      0.1
 // @homepageURL  https://github.com/FFrelay/Userscripts
 // @updateURL    https://raw.githubusercontent.com/FFrelay/Userscripts/main/GPI.js
 // @downloadURL  https://raw.githubusercontent.com/FFrelay/Userscripts/main/GPI.js
@@ -10,7 +10,7 @@
 // @match        http://gvn.co/*
 // @grant        GM_getValue
 // @grant        GM_setValue
-// @run-in       no-container-tab
+// @run-in       normal-tabs
 // ==/UserScript==
 
 (function () {
