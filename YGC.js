@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YouTube Grid Customization
 // @namespace    http://tampermonkey.net/
-// @version      0.3
+// @version      0.4
 // @homepageURL  https://github.com/FFrelay/Userscripts
 // @updateURL    https://raw.githubusercontent.com/FFrelay/Userscripts/main/YGC.js
 // @downloadURL  https://raw.githubusercontent.com/FFrelay/Userscripts/main/YGC.js
@@ -14,7 +14,7 @@
 
 GM_addStyle(`
 .style-scope.ytd-rich-grid-renderer {
-    --ytd-rich-grid-items-per-row: 4 !important;
+    --ytd-rich-grid-items-per-row: 5 !important;
 }
 
 #contents > ytd-rich-grid-row,
