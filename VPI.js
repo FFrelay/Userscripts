@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         VOZ Post Ignorer (Dark Theme)
+// @name         VOZ Post Ignorer (Dark Theme) 2
 // @namespace    https://github.com/FFrelay/Userscripts
-// @version      3.6
+// @version      3.7
 // @homepageURL  https://github.com/FFrelay/Userscripts
 // @updateURL    https://raw.githubusercontent.com/FFrelay/Userscripts/main/VPI.js
 // @downloadURL  https://raw.githubusercontent.com/FFrelay/Userscripts/main/VPI.js
@@ -16,8 +16,77 @@
 (function () {
     'use strict';
 
-    const IGNORED_USERS_KEY = 'ignoredUsers';
-    let ignoredUsers = GM_getValue(IGNORED_USERS_KEY, []);
+const IGNORED_USERS_KEY = 'ignoredUsers';
+const GIST_ID = '8cc2fa59459ef0148554569dcb695c02';
+const GITHUB_TOKEN = 'Insert_here';
+const FILENAME = 'ignoredUsers.json';
+const API_URL = `https://api.github.com/gists/${GIST_ID}`;
+
+// Load Gist-stored ignored users
+async function loadIgnoredUsers() {
+    const res = await fetch(API_URL, {
+        headers: { Authorization: `token ${GITHUB_TOKEN}` }
+    });
+    const data = await res.json();
+    const json = JSON.parse(data.files[FILENAME].content || '{}');
+    const users = json[IGNORED_USERS_KEY] || [];
+    GM_setValue(IGNORED_USERS_KEY, users); // cache locally
+    return users;
+}
+
+// Save ignored users to Gist
+async function saveIgnoredUsersToGist(users) {
+    const currentData = JSON.parse((await (await fetch(API_URL, {
+        headers: { Authorization: `token ${GITHUB_TOKEN}` }
+    })).json()).files[FILENAME].content || '{}');
+
+    currentData[IGNORED_USERS_KEY] = users;
+
+    const body = {
+        files: {
+            [FILENAME]: {
+                content: JSON.stringify(currentData, null, 2)
+            }
+        }
+    };
+
+    await fetch(API_URL, {
+        method: 'PATCH',
+        headers: {
+            Authorization: `token ${GITHUB_TOKEN}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+    });
+
+    GM_setValue(IGNORED_USERS_KEY, users); // update local cache
+}
+
+// Usage example:
+let ignoredUsers = [];
+loadIgnoredUsers().then(users => {
+    ignoredUsers = users;
+    console.log("Loaded ignored users:", ignoredUsers);
+
+    // Initialize logic after users are loaded
+    hideIgnoredPosts();
+    hideIgnoredQuotes();
+    processPosts();
+
+    document.body.appendChild(manageButton);
+    manageButton.addEventListener('click', () => {
+        showManagePanel();
+    });
+
+    const observer = new MutationObserver(() => {
+        processPosts();
+    });
+
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+});
 
     // Management panel setup
     const panel = document.createElement('div');
@@ -68,7 +137,7 @@
     });
 
     function saveIgnoredUsers() {
-        GM_setValue(IGNORED_USERS_KEY, ignoredUsers);
+        saveIgnoredUsersToGist(ignoredUsers);
     }
 
     function isUserIgnored(username) {
@@ -85,30 +154,27 @@
         });
     }
 
-    // Function to check if a post is marked with #1
     function isPostMarkedAsOne(postElement) {
-        const anchors = postElement.querySelectorAll('a'); // Get all <a> elements in the post
+        const anchors = postElement.querySelectorAll('a');
         for (const anchor of anchors) {
-            if (anchor.textContent.trim() === '#1') { // Check if the text content is exactly "#1"
+            if (anchor.textContent.trim() === '#1') {
                 return true;
             }
         }
         return false;
     }
 
-    // Function to hide quotes from ignored users
     function hideIgnoredQuotes() {
         document.querySelectorAll('blockquote.bbCodeBlock.bbCodeBlock--expandable.bbCodeBlock--quote.js-expandWatch').forEach(quote => {
             const quoteAuthor = getQuoteAuthor(quote);
             if (quoteAuthor && isUserIgnored(quoteAuthor)) {
-                quote.style.display = 'none'; // Hide the quote block
+                quote.style.display = 'none';
             } else {
-                quote.style.display = ''; // Ensure visible if not ignored
+                quote.style.display = '';
             }
         });
     }
 
-    // Function to extract the author of a quote using data-quote attribute
     function getQuoteAuthor(quoteElement) {
         return quoteElement.getAttribute('data-quote') || null;
     }
@@ -116,7 +182,6 @@
     function addIgnoreButton(postElement, username) {
         if (postElement.querySelector('.ignore-button')) return;
 
-        // Create button container
         const buttonContainer = document.createElement('div');
         buttonContainer.style.cssText = `
             display: flex;
@@ -140,7 +205,6 @@
             box-shadow: 0 1.2px 3px rgba(255,255,255,0.1);
         `;
 
-        // Hover effects
         button.addEventListener('mouseover', () => {
             button.style.backgroundColor = '#333';
         });
@@ -156,9 +220,8 @@
                 ignoredUsers.push(username);
                 saveIgnoredUsers();
                 hideIgnoredPosts();
-                hideIgnoredQuotes(); // Also hide quotes from the ignored user
+                hideIgnoredQuotes();
 
-                // Visual feedback
                 button.textContent = 'Ignored';
                 button.style.backgroundColor = '#4CAF50';
                 button.style.borderColor = '#4CAF50';
@@ -225,12 +288,10 @@
         panel.style.display = 'block';
         document.body.appendChild(panel);
 
-        // Close button
         panel.querySelector('#closePanel').addEventListener('click', () => {
             panel.style.display = 'none';
         });
 
-        // Remove user buttons
         panel.querySelectorAll('.removeUser').forEach(button => {
             button.addEventListener('mouseover', (e) => {
                 e.target.style.backgroundColor = '#666';
@@ -244,9 +305,9 @@
                 if (index > -1) {
                     ignoredUsers.splice(index, 1);
                     saveIgnoredUsers();
-                    showManagePanel(); // Refresh the list
-                    hideIgnoredPosts(); // Show unignored posts
-                    hideIgnoredQuotes(); // Refresh quotes visibility
+                    showManagePanel();
+                    hideIgnoredPosts();
+                    hideIgnoredQuotes();
                 }
             });
         });
@@ -257,30 +318,8 @@
             const username = post.getAttribute('data-author');
             if (username) addIgnoreButton(post, username);
         });
-        hideIgnoredPosts(); // Apply hiding logic after processing posts
-        hideIgnoredQuotes(); // Apply hiding logic for quotes
+        hideIgnoredPosts();
+        hideIgnoredQuotes();
     }
 
-    // Initialize
-    (function init() {
-        hideIgnoredPosts();
-        hideIgnoredQuotes(); // Initial hiding of quotes
-        processPosts();
-
-        // Add manage button
-        document.body.appendChild(manageButton);
-        manageButton.addEventListener('click', () => {
-            showManagePanel();
-        });
-
-        // Observe DOM changes
-        const observer = new MutationObserver(() => {
-            processPosts();
-        });
-
-        observer.observe(document.body, {
-            childList: true,
-            subtree: true
-        });
-    })();
 })();
