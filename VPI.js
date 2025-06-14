@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         VOZ Post Ignorer (Dark Theme)
 // @namespace    https://github.com/FFrelay/Userscripts
-// @version      3.8
+// @version      3.9
 // @homepageURL  https://github.com/FFrelay/Userscripts
 // @updateURL    https://raw.githubusercontent.com/FFrelay/Userscripts/main/VPI.js
 // @downloadURL  https://raw.githubusercontent.com/FFrelay/Userscripts/main/VPI.js
@@ -18,14 +18,28 @@
 
 const IGNORED_USERS_KEY = 'ignoredUsers';
 const GIST_ID = '8cc2fa59459ef0148554569dcb695c02';
-const GITHUB_TOKEN = 'Insert_here';
 const FILENAME = 'ignoredUsers.json';
 const API_URL = `https://api.github.com/gists/${GIST_ID}`;
+const TOKEN_KEY = 'github_token';
+
+async function getGitHubToken() {
+    let token = await GM_getValue(TOKEN_KEY, null);
+    if (!token) {
+        token = prompt("Enter your GitHub token (it will be stored securely and only used by this script):");
+        if (token) {
+            await GM_setValue(TOKEN_KEY, token);
+        } else {
+            throw new Error("GitHub token is required.");
+        }
+    }
+    return token;
+}
 
 // Load Gist-stored ignored users
 async function loadIgnoredUsers() {
+    const token = await getGitHubToken();
     const res = await fetch(API_URL, {
-        headers: { Authorization: `token ${GITHUB_TOKEN}` }
+        headers: { Authorization: `token ${token}` }
     });
     const data = await res.json();
     const json = JSON.parse(data.files[FILENAME].content || '{}');
@@ -36,8 +50,9 @@ async function loadIgnoredUsers() {
 
 // Save ignored users to Gist
 async function saveIgnoredUsersToGist(users) {
+    const token = await getGitHubToken();
     const currentData = JSON.parse((await (await fetch(API_URL, {
-        headers: { Authorization: `token ${GITHUB_TOKEN}` }
+        headers: { Authorization: `token ${token}` }
     })).json()).files[FILENAME].content || '{}');
 
     currentData[IGNORED_USERS_KEY] = users;
@@ -53,7 +68,7 @@ async function saveIgnoredUsersToGist(users) {
     await fetch(API_URL, {
         method: 'PATCH',
         headers: {
-            Authorization: `token ${GITHUB_TOKEN}`,
+            Authorization: `token ${token}`,
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(body)
