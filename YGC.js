@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YouTube Grid Customization
 // @namespace    http://tampermonkey.net/
-// @version      0.5
+// @version      0.6
 // @homepageURL  https://github.com/FFrelay/Userscripts
 // @updateURL    https://raw.githubusercontent.com/FFrelay/Userscripts/main/YGC.js
 // @downloadURL  https://raw.githubusercontent.com/FFrelay/Userscripts/main/YGC.js
@@ -22,3 +22,18 @@ GM_addStyle(`
     display: contents !important;
 }
 `);
+
+//Hide Continue Watching miniplayer
+(function() {
+    document.body.addEventListener("yt-navigate-finish", function(event) {
+        if (document.getElementsByTagName('ytd-miniplayer').length) {
+            document.querySelector('ytd-miniplayer').parentNode.removeChild(document.querySelector('ytd-miniplayer'));
+        }
+        if (document.getElementsByClassName('ytp-miniplayer-button').length) {
+            document.querySelector('.ytp-miniplayer-button').parentNode.removeChild(document.querySelector('.ytp-miniplayer-button'))
+        }
+        if (window.location.pathname != "/watch") {
+            document.querySelector('#movie_player video').parentNode.removeChild(document.querySelector('#movie_player video'));
+        }
+    });
+})();
