@@ -6,7 +6,7 @@
 // @updateURL    https://raw.githubusercontent.com/FFrelay/Userscripts/main/GPI.js
 // @downloadURL  https://raw.githubusercontent.com/FFrelay/Userscripts/main/GPI.js
 // @description  Ignore and hide ignored users and their quotes on gvn.co - Works only in normal tabs (not container tabs)
-// @author       ffrelay
+// @author       FFrelay
 // @match        http://gvn.co/*
 // @grant        GM_getValue
 // @grant        GM_setValue
