@@ -5,7 +5,7 @@
 // @homepageURL  https://github.com/FFrelay/Userscripts
 // @updateURL    https://raw.githubusercontent.com/FFrelay/Userscripts/main/GPI.js
 // @downloadURL  https://raw.githubusercontent.com/FFrelay/Userscripts/main/GPI.js
-// @description  Ignore and hide ignored users and their quotes on gvn.co
+// @description  Ignore and hide ignored users and their quotes on gvn.co - Works only in normal tabs (not container tabs)
 // @author       ffrelay
 // @match        http://gvn.co/*
 // @grant        GM_getValue

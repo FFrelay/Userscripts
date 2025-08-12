@@ -5,7 +5,7 @@
 // @homepageURL  https://github.com/FFrelay/Userscripts
 // @updateURL    https://raw.githubusercontent.com/FFrelay/Userscripts/main/VPI.js
 // @downloadURL  https://raw.githubusercontent.com/FFrelay/Userscripts/main/VPI.js
-// @description  Ignore and hide ignored users and their quotes on voz.vn. Works only in normal tabs (not container tabs).
+// @description  Ignore and hide ignored users and their quotes on voz.vn - Works only in normal tabs (not container tabs)
 // @author       ffrelay
 // @match        https://voz.vn/*
 // @grant        GM_getValue
